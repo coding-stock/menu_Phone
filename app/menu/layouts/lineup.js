@@ -1,24 +1,25 @@
 import {View , Text , ScrollView , StyleSheet, TouchableOpacity , Image} from 'react-native';
-import {useState , useEffect} from 'react';
+import {useState , useEffect , useRef} from 'react';
 import { getMenuItems  } from '../data';
 import { colors , Fonts} from '../theme';
 import {createClient} from "@supabase/supabase-js";
-
 export default function Lineup(){
     const supabase = createClient(
         'https://ncdabrjqxlqyrhljppvt.supabase.co',
         'sb_publishable_EKqRqUen_SJ9bqzSrG98Uw_G0EHhVdz'
       );
-    
+    const scrollReset = useRef(null);
     const [selected , setSelected] = useState('Breakfast');
     const [categories , setCategories] = useState([]);
     const [items , setItems]= useState([]);
     const [displayed , setDisplayed] = useState([]);
-    const cat = ['breakfast' , 'salads' , 'chicken' , 'bjfhdf' , 'djfhdfh'];
+    const [menuType , setMenuType] = useState('food');
     useEffect(()=>{
         const fetchData = async ()=>{
             const data = await getMenuItems();
-            const uniquecategory = [... new Set(data.map(item => item.category))];
+            const filtered = data.filter(item => item.Isdrink == null);
+            const uniquecategory = [... new Set(filtered.map(item => item.category))];
+            
             setCategories(uniquecategory);
             setItems(data);
                 if (uniquecategory.length > 0) {
@@ -31,9 +32,39 @@ export default function Lineup(){
     useEffect(()=>{
         setDisplayed(items.filter(food => food.category === selected))
     } , [selected , items])
+
+    const resetScrollFunc = ()=>{
+      scrollReset.current?.scrollTo({x: 0 , animated: true})
+    }
     return(
         <View>
-       <ScrollView horizontal showsHorizontalScrollIndicator={false} >
+        <View style={styles.menuCategory}>
+          <TouchableOpacity onPress={
+            ()=>{
+              resetScrollFunc()
+              setMenuType('food')
+              const filtered = items.filter(item => item.Isdrink == null);
+              const uniquecategory = [... new Set(filtered.map(item => item.category))];
+              setCategories(uniquecategory);
+              if (uniquecategory.length > 0) {
+                    setSelected(uniquecategory[0]);
+                    setDisplayed(items.filter(food => food.category === uniquecategory[0]));
+    }  
+            }
+          } style={[styles.btn, menuType === 'food' && styles.activeBox]} key={"butt"}><Text style={[styles.btn_text , menuType === 'food' && styles.activeBoxText]}>Food</Text></TouchableOpacity>
+          <TouchableOpacity onPress={()=>{
+              setMenuType('Drinks')
+              resetScrollFunc()
+              const filtered = items.filter(item => item.Isdrink == true);
+              const uniquecategory = [... new Set(filtered.map(item => item.category))];
+              setCategories(uniquecategory);
+              if (uniquecategory.length > 0) {
+                    setSelected(uniquecategory[0]);
+                    setDisplayed(items.filter(food => food.category === uniquecategory[0]));
+    }  
+          }} style={[styles.btn, menuType != 'food' && styles.activeBox]}><Text style={[styles.btn_text , menuType != 'food' && styles.activeBoxText]}>Beverages</Text></TouchableOpacity>
+        </View>
+       <ScrollView horizontal showsHorizontalScrollIndicator={false} ref={scrollReset} >
         {categories.map(item=>(
             <TouchableOpacity key={item} 
             onPress={
@@ -47,30 +78,53 @@ export default function Lineup(){
  ><Text style= {[styles.text, selected === item && styles.activeText]}> {item} </Text></TouchableOpacity>
         ))}
        </ScrollView>  
-       {displayed.map(item =>{
-          const ImageUrl = supabase.storage
-          .from('images')
-          .getPublicUrl(item.image).data.publicUrl
-           return(
-           <ScrollView key={item.id} style={styles.box}>
-           <Image  source = {{uri : ImageUrl}} style= {styles.image}></Image>
-          <Text style= {styles.name}>{item.name}</Text> 
-          <Text style= {styles.desc}>{item.description}</Text>
-          <View style={styles.priceRow}>
-  <Text style={styles.price}>{item.price}</Text>
-
-  <TouchableOpacity><Image  source={require('../images/plus.png')}  resizeMode="contain" style={styles.icon} /></TouchableOpacity>
-</View>
-
-          </ScrollView>
-           )
-       })}
+       {displayed.map(item => {
+  const ImageUrl = supabase.storage
+    .from('images')
+    .getPublicUrl(item.image).data.publicUrl
+  return (
+    <View key={item.id} style={styles.box}>
+      <Image source={{uri: ImageUrl}} style={styles.image} />
+      <Text style={styles.name}>{item.name}</Text> 
+      <Text style={styles.desc}>{item.description}</Text>
+      <View style={styles.priceRow}>
+        <Text style={styles.price}>{item.price?.toString()}</Text>
+        <TouchableOpacity>
+          <Image source={require('../images/plus.png')} resizeMode="contain" style={styles.icon} />
+        </TouchableOpacity>
+      </View>
+    </View>
+  )
+})}
        </View> 
        
     )
 }
 const styles = StyleSheet.create({
-      categoryItem: {
+   activeBox:{
+     backgroundColor: colors.orange
+   },
+   activeBoxText:{
+    color: colors.box_color
+   },
+    menuCategory:{
+      flexDirection: "row",
+      justifyContent: "space-around"
+    },
+    btn_text:{
+      color: colors.box_color_light_lighter,
+      fontSize: 20,
+      textAlign: "center",
+      fontFamily: Fonts.Text
+    },
+    btn:{
+      backgroundColor: colors.box_color_light,
+      padding: 20,
+      width: "40%",
+      borderRadius: 20,
+      marginBottom: 30,
+    },
+   categoryItem: {
     paddingHorizontal: 25,
     paddingVertical: 0,
     color: "white",

@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, ImageBackground, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, ImageBackground, StyleSheet  , Modal } from "react-native";
 import { useState, useEffect } from "react";
 import { getMenuItems } from "./data";
 import { useRouter } from "expo-router";
@@ -7,7 +7,7 @@ import  Footer  from "./footer";
 import Navbar from "./layouts/navbar";
 import Lineup from "./layouts/lineup";
 import { ScrollView } from "react-native";
-export default function Index() {
+export default function Home() {
   const [menuItems, setMenuItems] = useState([]);
   const route = useRouter();
 
@@ -23,10 +23,10 @@ export default function Index() {
       <View style={styles.container}>
       
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Navbar />
+       <Navbar/>
         <Lineup />
       </ScrollView>
-
+     <Footer screen={"home"} />
      
 
     </View>

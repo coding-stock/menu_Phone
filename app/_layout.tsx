@@ -18,20 +18,14 @@ export default function Layout() {
       <Stack.Screen 
       name='index'
       options={{
-         headerTitle: () => <View style={{ flex: 1, alignItems: "center" }}>
-              <Image
-                source={require("../assets/images/honey_logo.png")}
-                style={{ width: 120, height: 100, resizeMode: "contain" }}
-              />
-            </View>,
-         headerStyle: { backgroundColor: "#000000" }
+         headerShown: false ,
       }}/>
       <Stack.Screen
       name = 'menu/home'
       options= {{
-        headerTitle: "Home"
+        headerShown: false
       }}
-      ></Stack.Screen>
+      />
       <Stack.Screen
        name= 'menu/menu'
        options={{

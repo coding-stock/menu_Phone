@@ -1,4 +1,4 @@
-import { View , Text , ImageBackground , StyleSheet, Touchable, TouchableOpacity } from "react-native";
+import { View , Text , ImageBackground , StyleSheet, Touchable, TouchableOpacity , Image } from "react-native";
 import { colors } from "./menu/theme";
 import { useRouter } from "expo-router";
 
@@ -10,6 +10,7 @@ export default function Index() {
       style={styles.background}
       resizeMode="cover"
     > 
+    <Image source={require('../assets/images/honey_logo.png')} resizeMode="contain" style={{ width: 130 }}></Image>
     <View style= {styles.container}>
      <Text style={[styles.text , styles.est]}>EST.2026</Text>
      <Text style={styles.text}>Enjoy exquisite meals </Text>
