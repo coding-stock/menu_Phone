@@ -4,7 +4,7 @@
     "slug": "honey",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/images/honey.png",
+    "icon": "./assets/images/honey_logo.png",
     "scheme": "honey",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,

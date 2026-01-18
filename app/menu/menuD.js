@@ -1,4 +1,4 @@
-import {View , Text, TouchableOpacity , StyleSheet} from 'react-native';
+import {View , Text, TouchableOpacity , StyleSheet, ImageBackground} from 'react-native';
 import { getMenuItems } from './data';
 import { useState , useEffect } from 'react';
 import { useRouter } from 'expo-router';
@@ -19,6 +19,12 @@ export default function Drinks(){
       fetchData();
     } , [])
     return(
+        <ImageBackground
+              source={require("./images/honeyday.jpg")} 
+              style={styles.background}
+              resizeMode="cover"
+        >
+        <View style={styles.overlay} />
         <ScrollView contentContainerStyle = {styles.container}>
             {categories.map(item =>(
                 <TouchableOpacity style = {styles.btns} key={item} onPress={()=>{
@@ -28,14 +34,21 @@ export default function Drinks(){
                 </TouchableOpacity>
             ))}
         </ScrollView>
+        </ImageBackground>
     )
 }
 const styles = StyleSheet.create({
+    background: {
+    flex: 1,
+  },
+     overlay: {
+    ...StyleSheet.absoluteFillObject, 
+    backgroundColor: "rgba(0,0,0,0.5)", 
+     },
     container:{
         flexDirection : "row",
         flexWrap : "wrap",
         gap: 20,
-        backgroundColor : "#000000ff",
         flex: 1,
         padding : 5
     },

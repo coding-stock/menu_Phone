@@ -1,11 +1,21 @@
-export const colors = {
-  box_color: '#FAF3E1', 
-  text: '#2B2A26',    
-  price: '#B24C39'  
-}
-export const fonts = {
-  regular: 'Roboto_400Regular',
-  bold: 'Roboto_700Bold',
-};
-// add the font codes here 
+import { useFonts } from "expo-font";
+import { Slot } from "expo-router";
 
+export const colors = {
+  box_color: '#0b0e10', 
+  text: '#e2ceb1',    
+  price: '#B24C39',
+  orange: '#FFBF00',
+  black_orange: '#1f0c00',
+  orange_opacity: '#ffbf0022',
+  tint_glass : "#50505084",
+  gray : "#a0a0a0b1",
+}
+
+export const Fonts = {
+  Elegant: 'Elegant',
+  Text: 'Text',
+  Roboto: 'Roboto',
+  Fancy: 'Fancy',
+  Google: 'Google_Sans'
+}

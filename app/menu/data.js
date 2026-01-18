@@ -12,5 +12,5 @@ export  async function getMenuItems() {
     console.log(error);
     return [];
   }
-  return data;
+  return data ;
 }
