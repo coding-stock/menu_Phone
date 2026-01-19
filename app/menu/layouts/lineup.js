@@ -3,8 +3,12 @@ import {useState , useEffect , useRef} from 'react';
 import { getMenuItems  } from '../data';
 import { colors , Fonts} from '../theme';
 import {createClient} from "@supabase/supabase-js";
-export default function Lineup(){
-    const supabase = createClient(
+import { useRouter} from 'expo-router';
+export default function Lineup({ setOrderItems }){
+    const route = useRouter();
+
+   
+       const supabase = createClient(
         'https://ncdabrjqxlqyrhljppvt.supabase.co',
         'sb_publishable_EKqRqUen_SJ9bqzSrG98Uw_G0EHhVdz'
       );
@@ -35,6 +39,13 @@ export default function Lineup(){
 
     const resetScrollFunc = ()=>{
       scrollReset.current?.scrollTo({x: 0 , animated: true})
+    }
+    const addToCart = (id , name) =>{
+      const newItem = {
+        id: id,
+        name: name,
+      }
+       setOrderItems(prevItems => [...prevItems , newItem]);
     }
     return(
         <View>
@@ -89,7 +100,9 @@ export default function Lineup(){
       <Text style={styles.desc}>{item.description}</Text>
       <View style={styles.priceRow}>
         <Text style={styles.price}>{item.price?.toString()}</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={()=>{
+           addToCart(item.id , item.name)
+        }}>
           <Image source={require('../images/plus.png')} resizeMode="contain" style={styles.icon} />
         </TouchableOpacity>
       </View>
@@ -177,8 +190,8 @@ const styles = StyleSheet.create({
   alignItems: 'center',
 },
 icon: {
-  width: 30,
-  height: 30,
+  width: 80,
+  height: 80,
   transform : "translateY(-40%)"
 },
 

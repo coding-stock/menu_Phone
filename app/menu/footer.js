@@ -3,7 +3,7 @@ import { colors , images } from './theme';
 import {useState} from 'react'
 import {useRouter} from 'expo-router';
 
-export default function Footer({screen}){
+export default function Footer({screen , orderItems}){
     const route = useRouter();
     const selectedHome = screen === 'home' ? images.home_orange : images.home
     const selectedStore = screen === 'cart' ? images.shop_orange : images.shop
@@ -13,7 +13,12 @@ export default function Footer({screen}){
     
               <View style={styles.footer}>
                  <TouchableOpacity onPress={()=>{ route.push('/menu/home') }}><Image style={styles.icon} source={selectedHome} /></TouchableOpacity>
-                 <TouchableOpacity onPress={()=>{ route.push('/menu/cart') }}><Image style={styles.icon} source={selectedCart} /></TouchableOpacity>
+                 <TouchableOpacity onPress={()=>{ route.push({
+                  pathname : '/menu/cart' ,
+                  params: {
+                    data : JSON.stringify(orderItems)
+                  }
+                 }) }}><Image style={styles.icon} source={selectedCart} /></TouchableOpacity>
                  <TouchableOpacity onPress={()=>{ route.push('/menu/contact') }}><Image style={styles.icon} source={selectedStore} /></TouchableOpacity>
               </View>
            

@@ -27,15 +27,9 @@ export default function Layout() {
       }}
       />
       <Stack.Screen
-       name= 'menu/menu'
-       options={{
-        headerTitle: 'Food Menu'
-       }}
-      />
-      <Stack.Screen
-      name='menu/menuD'
+      name='menu/cart'
       options={{
-        headerTitle: 'Drinks Menu'
+        headerTitle: "Cart"
       }}/>
     </Stack>
   );

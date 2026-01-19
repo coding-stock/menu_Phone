@@ -7,7 +7,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {useRouter} from 'expo-router';
 
-export default function Navbar(){
+export default function Navbar({orderItems}){
     const route = useRouter();
     const [items , setItems] = useState([])
     const [img , setImg] = useState(null)
@@ -39,7 +39,12 @@ export default function Navbar(){
                     setOpenTabs(prev => !prev)
               }}><Image resizeMode='contain' style={styles.icon} source={require('../images/menus.png')}/></TouchableOpacity> 
               <Text style={styles.logo}>HONEY RESTAURANT</Text>
-              <TouchableOpacity style={styles.iconbg}><Image resizeMode='contain' style={styles.icon} source={require('../images/shopping-bag.png')}/></TouchableOpacity>
+              <TouchableOpacity style={styles.iconbg} onPress={()=>{ route.push({
+                  pathname : '/menu/cart' ,
+                  params: {
+                    data : JSON.stringify(orderItems)
+                  }
+                 }) }}><Image resizeMode='contain' style={styles.icon} source={require('../images/shopping-bag.png')}/></TouchableOpacity>
          </View>
          {/* Tabssssss */}
 
