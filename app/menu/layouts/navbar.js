@@ -2,36 +2,57 @@ import {View , Text, StyleSheet, ImageBackground, TouchableOpacity, Image , Moda
 import { colors , Fonts } from '../theme'
 import { getMenuItems } from '../data';
 import { createClient } from '@supabase/supabase-js';
-import { useState , useEffect } from 'react';
+import { useState , useEffect , useRef } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {useRouter} from 'expo-router';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function Navbar({orderItems}){
     const route = useRouter();
-    const [items , setItems] = useState([])
+    const [item , setItems] = useState([])
     const [img , setImg] = useState(null)
     const [openTabs , setOpenTabs] = useState(false);
+    const [storage , setStorage] = useState([]);
       const supabase = createClient(
         'https://ncdabrjqxlqyrhljppvt.supabase.co',
         'sb_publishable_EKqRqUen_SJ9bqzSrG98Uw_G0EHhVdz'
       );
-    
     useEffect(()=>{
         const fetchData = async () => {
             const data = await getMenuItems();
-            setItems(data);
-            if(data.length > 0){
                 const firstItem = data.find(item => item.name === "Lemon Chicken Salad" )
+                setItems(firstItem);
                 const imageUrl = supabase.storage
             .from('images')
             .getPublicUrl(firstItem.image).data.publicUrl;
             setImg(imageUrl);
-            }
+            
 
         };
         fetchData();
     }, []);
+    useEffect(() => {
+       const getFromStorage = async () => {
+       const stored = await AsyncStorage.getItem('orderItems');
+       setStorage(stored ? JSON.parse(stored) : []);
+    };
+    getFromStorage();
+}, []);
+const isDone = storage.some(
+  cartItem => cartItem.id === item?.id
+);
+
+const addToCart = async () => {
+  if (!item) return;
+
+  const exists = storage.some(i => i.id === item.id);
+  if (exists) return;
+
+  const updated = [...storage, { id: item.id, name: item.name }];
+  setStorage(updated);
+  await AsyncStorage.setItem('orderItems', JSON.stringify(updated));
+};
+
     return(
         <SafeAreaView>
          <View style={styles.nav}>
@@ -39,7 +60,7 @@ export default function Navbar({orderItems}){
                     setOpenTabs(prev => !prev)
               }}><Image resizeMode='contain' style={styles.icon} source={require('../images/menus.png')}/></TouchableOpacity> 
               <Text style={styles.logo}>HONEY RESTAURANT</Text>
-              <TouchableOpacity style={styles.iconbg} onPress={()=>{ route.push({
+              <TouchableOpacity style={styles.iconbg } onPress={()=>{ route.push({
                   pathname : '/menu/cart' ,
                   params: {
                     data : JSON.stringify(orderItems)
@@ -60,7 +81,14 @@ export default function Navbar({orderItems}){
          <Text style={[styles.text , styles.featured]}>Featured Selection</Text>
          <Text style={[styles.text , styles.title]}>The Chef's Signature</Text>
          <Text style={[styles.text, styles.yap]}>A journey through seasonal textures and avant-garde preparation</Text>
-         <TouchableOpacity style={styles.btn}><Text style={[ styles.btn_text]} >EXPLORE</Text></TouchableOpacity>
+         <TouchableOpacity style={[styles.btn , isDone && styles.addToCart]} onPress={()=>{
+                 if(isDone){
+                    route.push('/menu/cart')
+                 }
+                 else{
+                    addToCart()
+                 }
+         }}><Text style={[ styles.btn_text , isDone && styles.addToCart_text]} >{isDone === false ? "Add to cart" : "View cart"}</Text></TouchableOpacity>
     </LinearGradient>
         </ImageBackground>
         
@@ -68,6 +96,16 @@ export default function Navbar({orderItems}){
     )
 }
 const styles = StyleSheet.create({
+  addToCart:{
+    backgroundColor: colors.orange
+  }, 
+  addToCart_text:{
+    color: "black"
+  },
+  iconbgActive: {
+  backgroundColor:"red",
+  transform: [{ scale: 1.1 }],
+},
     tabs: {
     width: "70%",
     justifyContent: "center",
@@ -148,7 +186,7 @@ const styles = StyleSheet.create({
         paddingBottom: 40,
     },
     btn:{
-       backgroundColor: colors.orange,
+       backgroundColor: colors.box_color_light,
        alignSelf: 'flex-start',
        marginLeft: 20,
        paddingLeft: 20,
@@ -158,7 +196,9 @@ const styles = StyleSheet.create({
     },
     btn_text:{
        fontSize: 16,
-       fontFamily: Fonts.Roboto
+       fontFamily: Fonts.Elegant,
+       padding: 5,
+       color: colors.box_color_light_lighter
     }
 
 })

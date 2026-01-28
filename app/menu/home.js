@@ -54,7 +54,7 @@ export default function Home() {
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <Navbar orderItems={orderItems} />
-        <Lineup setOrderItems={setOrderItems} />
+        <Lineup setOrderItems={[setOrderItems , orderItems]} />
       </ScrollView>
       <Footer screen={"home"} orderItems={orderItems} />
     </View>

@@ -29,7 +29,7 @@ export default function Layout() {
       <Stack.Screen
       name='menu/cart'
       options={{
-        headerTitle: "Cart"
+        headerShown: false
       }}/>
     </Stack>
   );

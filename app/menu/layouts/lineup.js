@@ -4,7 +4,8 @@ import { getMenuItems  } from '../data';
 import { colors , Fonts} from '../theme';
 import {createClient} from "@supabase/supabase-js";
 import { useRouter} from 'expo-router';
-export default function Lineup({ setOrderItems }){
+import AsyncStorage from '@react-native-async-storage/async-storage';
+export default function Lineup({  }){
     const route = useRouter();
 
    
@@ -18,6 +19,8 @@ export default function Lineup({ setOrderItems }){
     const [items , setItems]= useState([]);
     const [displayed , setDisplayed] = useState([]);
     const [menuType , setMenuType] = useState('food');
+    const [store , setStore] = useState([])
+  
     useEffect(()=>{
         const fetchData = async ()=>{
             const data = await getMenuItems();
@@ -40,13 +43,27 @@ export default function Lineup({ setOrderItems }){
     const resetScrollFunc = ()=>{
       scrollReset.current?.scrollTo({x: 0 , animated: true})
     }
-    const addToCart = (id , name) =>{
-      const newItem = {
-        id: id,
-        name: name,
-      }
-       setOrderItems(prevItems => [...prevItems , newItem]);
+   const addToCart = async (id, name) => {
+  setStore(prev => {
+    // prevent duplicates
+    if (prev.some(item => item.id === id)) return prev;
+
+    const updated = [...prev, { id, name }];
+    AsyncStorage.setItem('orderItems', JSON.stringify(updated));
+    return updated;
+  });
+};
+
+
+useEffect(() => {
+  const loadCart = async () => {
+    const stored = await AsyncStorage.getItem('orderItems');
+    if (stored) {
+      setStore(JSON.parse(stored));
     }
+  };
+  loadCart();
+}, []);
     return(
         <View>
         <View style={styles.menuCategory}>
@@ -89,32 +106,61 @@ export default function Lineup({ setOrderItems }){
  ><Text style= {[styles.text, selected === item && styles.activeText]}> {item} </Text></TouchableOpacity>
         ))}
        </ScrollView>  
-       {displayed.map(item => {
+      {displayed.map(item => {
   const ImageUrl = supabase.storage
     .from('images')
-    .getPublicUrl(item.image).data.publicUrl
+    .getPublicUrl(item.image).data.publicUrl;
+
+  // Check if item is already in cart
+  const isDone = store.some(prev => prev.id === item.id);
+
   return (
     <View key={item.id} style={styles.box}>
-      <Image source={{uri: ImageUrl}} style={styles.image} />
-      <Text style={styles.name}>{item.name}</Text> 
+      <Image source={{ uri: ImageUrl }} style={styles.image} />
+      <Text style={styles.name}>{item.name}</Text>
       <Text style={styles.desc}>{item.description}</Text>
       <View style={styles.priceRow}>
-        <Text style={styles.price}>{item.price?.toString()}</Text>
-        <TouchableOpacity onPress={()=>{
-           addToCart(item.id , item.name)
-        }}>
-          <Image source={require('../images/plus.png')} resizeMode="contain" style={styles.icon} />
+        <Text style={styles.price}>{item.price?.toString()} RF</Text>
+        <TouchableOpacity
+          style={isDone ? styles.viewCart : styles.iconBtn}
+          onPress={() => {
+            if (isDone) {
+              route.push('/menu/cart');
+            } else {
+              addToCart(item.id, item.name);
+            }
+          }}
+        >
+          <Text style={isDone ? styles.viewCart_Text : { color: "white", fontFamily: Fonts.Elegant }}>
+            {isDone ? "View cart" : "Add to cart"}
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
-  )
+  );
 })}
-       </View> 
+      </View> 
        
     )
 }
 const styles = StyleSheet.create({
-   activeBox:{
+  iconBtn:{
+     backgroundColor: colors.box_color_light,
+     
+     fontFamily: Fonts.Elegant,
+     padding: 15,
+     borderRadius:13
+  } ,
+  viewCart:{
+      backgroundColor: colors.orange,
+      padding:13,
+      borderRadius: 20
+   },
+   viewCart_Text:{
+     color: "black",
+     fontFamily: Fonts.Elegant
+   },
+  activeBox:{
      backgroundColor: colors.orange
    },
    activeBoxText:{
@@ -192,6 +238,7 @@ const styles = StyleSheet.create({
 icon: {
   width: 80,
   height: 80,
+  backgroundColor: "white",
   transform : "translateY(-40%)"
 },
 
