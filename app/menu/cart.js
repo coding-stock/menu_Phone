@@ -7,7 +7,7 @@ import {createClient} from "@supabase/supabase-js";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import  Footer from './footer';  
-import AwesomeAlert from 'react-native-awesome-alerts';
+import Modal from 'react-native-modal'
 export default function Cart(){
     
     const supabase = createClient(
@@ -19,6 +19,7 @@ export default function Cart(){
     const [total , setTotal] = useState(0);
     const [count , setCount] = useState({});
     const [showAlert , setShowAlert] = useState(false)
+    const [loading , setLoading] = useState(true);
     const router = useRouter();
     useEffect( ()=>{
         const fetchData = async ()=> {
@@ -28,7 +29,7 @@ const parsed = storedOrders ? JSON.parse(storedOrders) : [];
 
         const cartItems = data.filter(item => parsed.some(p => p.id === item.id));
         setCart(cartItems)   
-        
+        setLoading(false)
 
      const storedQty = await AsyncStorage.getItem('quantity');
     const parsedQty = storedQty ? JSON.parse(storedQty) : {};
@@ -93,7 +94,7 @@ useEffect(() => {
   AsyncStorage.setItem('quantity', JSON.stringify(count));
 }, [count, cart]);
 const openWhatsApp = async ()=>{
-  const phoneNumber= '+250784189910'
+  const phoneNumber= '250784189910'
                  let message = `*-----------------My Order------------------*\n`
                  cart.forEach((item) =>{
                     message += `Item Name: *${item.name}*\n`
@@ -104,8 +105,7 @@ const openWhatsApp = async ()=>{
                  message += `\nTotal: *${total} RWF*\n`
                  message += "_______________________________________"
    const encodedMessage = encodeURIComponent(message);
-   const whatsappUrl = `whatsapp://send?phone=${phoneNumber}&text=${encodedMessage}`;
-   
+   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
    try{
      const check = await Linking.canOpenURL(whatsappUrl)
      if(check){
@@ -122,7 +122,9 @@ const openWhatsApp = async ()=>{
      Alert.alert("Error" , error)
    }  
 }
+
     return(
+      <>
        <SafeAreaView style= {styles.container}>
         <ScrollView  contentContainerStyle={{ paddingBottom: 48 }}>
         <TouchableOpacity style={styles.backBg} onPress={()=>
@@ -183,30 +185,104 @@ const openWhatsApp = async ()=>{
                 <Text style={styles.totalPrice}>Continue to Whatsapp</Text>
             </TouchableOpacity>
         </ScrollView>
-        <Footer style={styles.footer} screen={"store"} orderItems={cart} />
+     <Modal
+  isVisible={showAlert}
+  onBackdropPress={() => setShowAlert(false)}
+  onBackButtonPress={() => setShowAlert(false)}
+  animationIn="zoomIn"
+  animationOut="zoomOut"
+>
+  <View style={styles.modalContent}>
+    <Text style={styles.modalTitle}>Confirm Order</Text>
+    <Text style={styles.modalMessage}>
+      Are you sure you want to send this order? It can't be undone
+    </Text>
+    <View style={styles.modalButtons}>
+      <TouchableOpacity 
+        style={[styles.modalButton, styles.cancelButton]} 
+        onPress={() => setShowAlert(false)}
+      >
+        <Text style={styles.buttonText}>Cancel</Text>
+      </TouchableOpacity>
+      <TouchableOpacity 
+        style={[styles.modalButton, styles.confirmButton]} 
+        onPress={() => {
+          setShowAlert(false);
+          openWhatsApp();
+        }}
+      >
+        <Text style={styles.buttonText}>Yes, Send</Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+</Modal>
 
-<AwesomeAlert
-  show={showAlert}
-  showProgress={false}
-  title="Confirm Order"
-  message="Are you sure you want to send this order? it cant be undone"
-  closeOnTouchOutside={true}
-  closeOnHardwareBackPress={false}
-  showCancelButton={true}
-  showConfirmButton={true}
-  cancelText="Cancel"
-  confirmText="Yes, Send"
-  confirmButtonColor="#25D366"
-  onCancelPressed={() => setShowAlert(false)}
-  onConfirmPressed={() => {
-    setShowAlert(false);
-    openWhatsApp();
-  }}
-/>
-      </SafeAreaView>
+<Footer screen={"store"} />   
+  
+    </SafeAreaView>
+   <Modal visible={loading} animationType='fade' transparent={true}>
+  <View style={styles.loadingPage}>
+    <Text style={styles.loadingText}>Loading...</Text>
+  </View>
+</Modal> </>
     )
 }
 const styles = StyleSheet.create({ 
+  loadingText:{
+    color: colors.orange,
+    fontFamily: Fonts.Google,
+    fontSize: 35
+  },
+  loadingPage:{
+    flex: 1,
+    width: "150%",
+    position: "absolute",
+    left: -130,
+    right: 100,
+    height: "150%",  // Add this
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: colors.box_color,
+  },
+    modalContent: {
+    backgroundColor: colors.box_color_light,
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontFamily: Fonts.Google,
+    color: 'white',
+    marginBottom: 10,
+  },
+  modalMessage: {
+    fontSize: 16,
+    color: 'white',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  modalButton: {
+    padding: 15,
+    borderRadius: 10,
+    minWidth: 100,
+    alignItems: 'center',
+  },
+  cancelButton: {
+    backgroundColor: colors.gray,
+  },
+  confirmButton: {
+    backgroundColor: '#25D366',
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
+    fontFamily: Fonts.Roboto,
+  },
   backBg:{
         padding: 10
     },
@@ -322,7 +398,6 @@ subTotal:{
   flexDirection: "row",
   justifyContent: "space-between",
   padding: 10,
-  marginBottom: -20
 },
 payment_Txt:{
   color: "white",

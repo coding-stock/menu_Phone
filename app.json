@@ -14,7 +14,7 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/honey.png",
+        "foregroundImage": "./assets/images/honey_logo.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
@@ -47,10 +47,7 @@
       "reactCompiler": true
     },
     "extra": {
-      "router": {},
-      "eas": {
-        "projectId": "4b4dd181-0a9f-48d3-9cd7-e7798b2f6150"
-      }
+      "router": {}
     },
     "owner": "coding_stock"
   }

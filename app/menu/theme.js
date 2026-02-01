@@ -15,11 +15,12 @@ export const colors = {
 }
 
 export const Fonts = {
-  Elegant: 'Elegant',
+  Elegant: 'Jet_Brains',
   Text: 'Text',
   Roboto: 'Roboto',
   Fancy: 'Fancy',
-  Google: 'Google_Sans'
+  Google: 'Google_Sans',
+  Jet_Brains: 'Jet_Brains'
 }
 export const images ={
   home: require('./images/home.png'),

@@ -1,4 +1,4 @@
-import {View , Text , ScrollView , StyleSheet, TouchableOpacity , Image} from 'react-native';
+import {View , Text , ScrollView , StyleSheet, TouchableOpacity , Image , Modal} from 'react-native';
 import {useState , useEffect , useRef} from 'react';
 import { getMenuItems  } from '../data';
 import { colors , Fonts} from '../theme';
@@ -7,8 +7,6 @@ import { useRouter} from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function Lineup({  }){
     const route = useRouter();
-
-   
        const supabase = createClient(
         'https://ncdabrjqxlqyrhljppvt.supabase.co',
         'sb_publishable_EKqRqUen_SJ9bqzSrG98Uw_G0EHhVdz'
@@ -20,7 +18,7 @@ export default function Lineup({  }){
     const [displayed , setDisplayed] = useState([]);
     const [menuType , setMenuType] = useState('food');
     const [store , setStore] = useState([])
-  
+    const [loading , setLoading] = useState(true);
     useEffect(()=>{
         const fetchData = async ()=>{
             const data = await getMenuItems();
@@ -29,6 +27,7 @@ export default function Lineup({  }){
             
             setCategories(uniquecategory);
             setItems(data);
+            setLoading(false)
                 if (uniquecategory.length > 0) {
                     setSelected(uniquecategory[0]);
                     setDisplayed(data.filter(food => food.category === uniquecategory[0]));
@@ -66,6 +65,7 @@ useEffect(() => {
 }, []);
     return(
         <View>
+        <Modal visible={loading} animationType='fade'><View style={[styles.loadingPage]}><Text style={styles.loadingText}>Loading...</Text></View></Modal>
         <View style={styles.menuCategory}>
           <TouchableOpacity onPress={
             ()=>{
@@ -131,7 +131,7 @@ useEffect(() => {
             }
           }}
         >
-          <Text style={isDone ? styles.viewCart_Text : { color: "white", fontFamily: Fonts.Elegant }}>
+          <Text style={isDone ? styles.viewCart_Text : { color: "white", fontFamily: Fonts.Google  }}>
             {isDone ? "View cart" : "Add to cart"}
           </Text>
         </TouchableOpacity>
@@ -144,6 +144,17 @@ useEffect(() => {
     )
 }
 const styles = StyleSheet.create({
+  loadingText:{
+    color: colors.orange,
+    fontFamily: Fonts.Google,
+    fontSize: 35
+  }
+  ,loadingPage:{
+     flex: 1,
+     justifyContent: "center",
+     alignItems: "center",
+     backgroundColor: colors.box_color,
+  },
   iconBtn:{
      backgroundColor: colors.box_color_light,
      
@@ -158,7 +169,7 @@ const styles = StyleSheet.create({
    },
    viewCart_Text:{
      color: "black",
-     fontFamily: Fonts.Elegant
+     fontFamily: Fonts.Google
    },
   activeBox:{
      backgroundColor: colors.orange

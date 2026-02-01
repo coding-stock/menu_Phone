@@ -40,16 +40,6 @@ export default function Home() {
   }, [orderItems]);
 
   // Clear order items
-  const clearOrderItems = async () => {
-    try {
-      await AsyncStorage.removeItem('orderItems');
-      setOrderItems([]);
-      console.log('Order items cleared');
-    } catch (error) {
-      console.error('Error clearing order items', error);
-    }
-  };
-
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>

@@ -135,9 +135,9 @@ const styles = StyleSheet.create({
        marginTop: 10
     },
     logo:{
-        fontFamily: Fonts.Elegant,
+        fontFamily: Fonts.Jet_Brains,
         color: "white",
-        fontSize: 28,
+        fontSize: 25,
     },
     img:{
          width: "100%",
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
     },
     btn_text:{
        fontSize: 16,
-       fontFamily: Fonts.Elegant,
+       fontFamily: Fonts.Google,
        padding: 5,
        color: colors.box_color_light_lighter
     }

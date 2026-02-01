@@ -3,11 +3,12 @@ import { Image , View } from 'react-native';
 import { useFonts } from 'expo-font';
 export default function Layout() {
     const [fontsLoaded] = useFonts({
-    Fancy:  require('../assets/fonts/Elegant.ttf'),
+    Fancy:  require('../assets/fonts/playwrite.ttf'),
     Elegant: require('../assets/fonts/cool.otf'),
     Roboto: require('../assets/fonts/robotto.ttf'),
     Text: require('../assets/fonts/text.ttf'),
-    Google_Sans: require('../assets/fonts/GoogleSans.ttf')
+    Google_Sans: require('../assets/fonts/Poppins.ttf'),
+    Jet_Brains: require('../assets/fonts/JetBrainsMono-Bold.ttf')
     
   });
 
@@ -28,6 +29,11 @@ export default function Layout() {
       />
       <Stack.Screen
       name='menu/cart'
+      options={{
+        headerShown: false
+      }}/>
+      <Stack.Screen
+      name='menu/contact'
       options={{
         headerShown: false
       }}/>
